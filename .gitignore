@@ -12,3 +12,4 @@ test-results
 qa-shots
 coverage
 .DS_Store
+.start.log

@@ -1,8 +1,14 @@
 {
   "name": "sillage",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A fragrance house's private formula room.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devtechedge/sillage.git"
+  },
+  "homepage": "https://sillage.vercel.app",
   "engines": {
     "node": ">=22"
   },
@@ -20,6 +26,7 @@
     "db:seed": "tsx scripts/seed-demo.ts",
     "db:status": "prisma migrate status",
     "e2e": "npm run build && node scripts/prepare-e2e-db.mjs && playwright test",
+    "vercel-build": "prisma migrate deploy && next build",
     "postinstall": "prisma generate"
   },
   "dependencies": {
