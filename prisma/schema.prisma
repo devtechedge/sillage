@@ -1,0 +1,281 @@
+// Sillage schema.
+//
+// Roles, notes and lifecycle states are stored as strings so they stay
+// readable in SQL. The TypeScript domain layer is the typed source of truth and
+// the initial migration adds CHECK constraints for the values that matter.
+//
+// Money is integer cents. Formula parts are integer parts per thousand. Stock
+// is integer milligrams. All timestamps are UTC.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model House {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  currency  String   @default("USD")
+  timezone  String   @default("Asia/Kolkata")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+  materials   Material[]
+  briefs      Brief[]
+  formulas    Formula[]
+  trials      Trial[]
+  batches     Batch[]
+  stock       StockEntry[]
+  audit       AuditEvent[]
+
+  @@map("house")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships    Membership[]
+  sessions       Session[]
+  briefs         Brief[]         @relation("BriefAuthor")
+  formulas       Formula[]       @relation("FormulaAuthor")
+  versions       FormulaVersion[] @relation("VersionAuthor")
+  reviews        FormulaVersion[] @relation("VersionReviewer")
+  trials         Trial[]
+  batches        Batch[]
+  stockEntries   StockEntry[]
+  auditEvents    AuditEvent[]
+
+  @@map("user")
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  houseId   String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+
+  house House @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([houseId, userId])
+  @@index([userId])
+  @@map("membership")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("session")
+}
+
+model Material {
+  id               String   @id @default(cuid())
+  houseId          String
+  code             String
+  name             String
+  family           String
+  note             String
+  costCentsPerGram Int
+  persistenceHours Int
+  stockMg          Int
+  maxPpt           Int
+  reorderMg        Int
+  description      String
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  house  House        @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  lines  FormulaLine[]
+  stock  StockEntry[]
+
+  @@unique([houseId, code])
+  @@index([houseId, family])
+  @@index([houseId, active])
+  @@map("material")
+}
+
+model Brief {
+  id               String   @id @default(cuid())
+  houseId          String
+  title            String
+  client           String
+  body             String
+  targetFamilies   String[]
+  targetTop        Int
+  targetHeart      Int
+  targetBase       Int
+  costCeilingCents Int
+  status           String   @default("OPEN")
+  createdById      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  house     House     @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("BriefAuthor", fields: [createdById], references: [id])
+  formulas  Formula[]
+
+  @@index([houseId, status])
+  @@map("brief")
+}
+
+model Formula {
+  id              String   @id @default(cuid())
+  houseId         String
+  briefId         String
+  name            String
+  concentrationBp Int
+  status          String   @default("DRAFT")
+  createdById     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  house    House            @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  brief    Brief            @relation(fields: [briefId], references: [id], onDelete: Restrict)
+  createdBy User            @relation("FormulaAuthor", fields: [createdById], references: [id])
+  versions FormulaVersion[]
+
+  @@index([houseId, status])
+  @@index([houseId, briefId])
+  @@map("formula")
+}
+
+model FormulaVersion {
+  id           String    @id @default(cuid())
+  formulaId    String
+  version      Int
+  note         String    @default("")
+  status       String    @default("DRAFT")
+  totalPpt     Int       @default(0)
+  createdById  String
+  submittedAt  DateTime?
+  reviewerId   String?
+  decidedAt    DateTime?
+  decisionNote String?
+  createdAt    DateTime  @default(now())
+
+  formula   Formula       @relation(fields: [formulaId], references: [id], onDelete: Cascade)
+  createdBy User          @relation("VersionAuthor", fields: [createdById], references: [id])
+  reviewer  User?         @relation("VersionReviewer", fields: [reviewerId], references: [id])
+  lines     FormulaLine[]
+  trials    Trial[]
+  batches   Batch[]
+
+  @@unique([formulaId, version])
+  @@index([formulaId, status])
+  @@map("formula_version")
+}
+
+model FormulaLine {
+  id         String @id @default(cuid())
+  versionId  String
+  materialId String
+  ppt        Int
+
+  version  FormulaVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  material Material       @relation(fields: [materialId], references: [id], onDelete: Restrict)
+
+  @@unique([versionId, materialId])
+  @@index([materialId])
+  @@map("formula_line")
+}
+
+model Trial {
+  id          String   @id @default(cuid())
+  houseId     String
+  versionId   String
+  evaluatorId String
+  score       Int
+  tags        String[]
+  note        String
+  createdAt   DateTime @default(now())
+
+  house     House          @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  version   FormulaVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  evaluator User           @relation(fields: [evaluatorId], references: [id])
+
+  @@index([houseId, createdAt])
+  @@index([versionId])
+  @@map("trial")
+}
+
+model Batch {
+  id             String   @id @default(cuid())
+  houseId        String
+  versionId      String
+  lotCode        String
+  bottleCount    Int
+  bottleMl       Int
+  status         String   @default("MACERATING")
+  maceratedUntil DateTime
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  house     House          @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  version   FormulaVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  createdBy User           @relation(fields: [createdById], references: [id])
+  stock     StockEntry[]
+
+  @@unique([houseId, lotCode])
+  @@index([houseId, status])
+  @@index([versionId])
+  @@map("batch")
+}
+
+model StockEntry {
+  id         String   @id @default(cuid())
+  houseId    String
+  materialId String
+  deltaMg    Int
+  reason     String
+  batchId    String?
+  actorId    String
+  createdAt  DateTime @default(now())
+
+  house    House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  material Material @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  batch    Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  actor    User     @relation(fields: [actorId], references: [id])
+
+  @@index([houseId, materialId, createdAt])
+  @@index([batchId])
+  @@map("stock_entry")
+}
+
+model AuditEvent {
+  id         String   @id @default(cuid())
+  houseId    String
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  detail     Json?
+  createdAt  DateTime @default(now())
+
+  house House @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  actor User  @relation(fields: [actorId], references: [id])
+
+  @@index([houseId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_event")
+}
