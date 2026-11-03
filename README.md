@@ -4,7 +4,7 @@ A fragrance house's private formula room.
 
 Sillage is a working multi-user atelier for Maison Verre. A perfumer composes a formula in parts per thousand, an evaluator scores trials and approves or returns a version, and the lab produces traceable lots while stock is deducted in one transaction.
 
-**Live:** https://sillage.vercel.app
+**Live:** https://sillage-one-mu.vercel.app
 
 ![Sillage landing page](docs/screenshots/01-landing.png)
 

@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/devtechedge/sillage.git"
   },
-  "homepage": "https://sillage.vercel.app",
+  "homepage": "https://sillage-one-mu.vercel.app",
   "engines": {
     "node": ">=22"
   },
