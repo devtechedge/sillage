@@ -13,3 +13,5 @@ qa-shots
 coverage
 .DS_Store
 .start.log
+.vercel
+.env*
