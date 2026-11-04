@@ -26,6 +26,7 @@
     "db:seed": "tsx scripts/seed-demo.ts",
     "db:status": "prisma migrate status",
     "e2e": "npm run build && node scripts/prepare-e2e-db.mjs && playwright test",
+    "check:live": "node scripts/live-check.mjs",
     "vercel-build": "next build",
     "postinstall": "prisma generate"
   },
