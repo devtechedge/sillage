@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Status } from "@/components/status";
 import { NotePyramid } from "@/components/note-pyramid";
 import { Wordmark } from "@/components/wordmark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { formatCents, formatHours } from "@/lib/format";
 import { publicFormula } from "@/services/landing";
 
@@ -43,6 +44,7 @@ export default async function LandingPage() {
         <nav className="site-head__nav" aria-label="Public">
           <a href="#house">The house</a>
           <Link href="/login">Sign in</Link>
+          <ThemeToggle />
         </nav>
       </header>
 

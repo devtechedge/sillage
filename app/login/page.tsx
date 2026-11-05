@@ -3,6 +3,7 @@ import { DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/demo";
 import { getSessionUser } from "@/lib/session";
 import { LoginForm } from "@/components/login-form";
 import { Wordmark } from "@/components/wordmark";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata = { title: "Enter the house" };
 
@@ -12,6 +13,7 @@ export default async function LoginPage() {
 
   return (
     <main className="auth">
+      <div className="auth__toggle"><ThemeToggle /></div>
       <section className="auth__brand">
         <Wordmark />
         <p className="kicker">Maison Verre / formula room</p>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOut } from "@/app/auth-actions";
 import { Wordmark } from "@/components/wordmark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { requireHouse } from "@/lib/auth";
 
 export default async function HouseLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export default async function HouseLayout({ children }: { children: React.ReactN
               Sign out
             </button>
           </form>
+          <ThemeToggle />
         </div>
       </header>
       <main className="house-main">{children}</main>

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description: "Versioned formulas, evaluator trials and traceable batches.",
     images: ["/og.png"],
   },
-  icons: { icon: "/icon.svg" },
+  icons: { icon: ["/favicon.svg", "/icon.svg"] },
 };
 
 export const viewport: Viewport = {
@@ -42,9 +42,29 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const bootTheme = `(() => {
+    try {
+      const stored = window.localStorage.getItem("sillage-theme");
+      const theme = stored === "dark" ? "dark" : "light";
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch {
+      document.documentElement.dataset.theme = "light";
+      document.documentElement.style.colorScheme = "light";
+    }
+  })();`;
+
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: bootTheme }} />
+      </head>
+      <body>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+        <div id="main-content">{children}</div>
+      </body>
     </html>
   );
 }

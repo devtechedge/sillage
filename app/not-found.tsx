@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function NotFound() {
   return (
     <main className="not-found">
+      <div className="page-toggle"><ThemeToggle /></div>
       <Wordmark />
       <p className="kicker">404 / no such drawer</p>
       <h1>This page is not in the house.</h1>
