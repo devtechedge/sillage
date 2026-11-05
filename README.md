@@ -4,9 +4,19 @@ A fragrance house's private formula room.
 
 Sillage is a working multi-user atelier for Maison Verre. A perfumer composes a formula in parts per thousand, an evaluator scores trials and approves or returns a version, and the lab produces traceable lots while stock is deducted in one transaction.
 
-**Live:** https://sillage-one-mu.vercel.app
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?logo=vercel)](https://sillage-one-mu.vercel.app)
+[![CI](https://github.com/devtechedge/sillage/actions/workflows/ci.yml/badge.svg)](https://github.com/devtechedge/sillage/actions/workflows/ci.yml)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ![Sillage landing page](docs/screenshots/01-landing.png)
+
+## Live Demo
+
+**https://sillage-one-mu.vercel.app**
+
+> **Status:** demo house, seeded fiction, and a persistent Neon PostgreSQL database. The data resets when the seed is run, not on every visit. The four demo roles are public. Demo access is intentional; do not put real client or commercial data in this deployment.
 
 ## The room
 
@@ -111,7 +121,7 @@ As of 3 November 2026:
 
 - 70 unit tests
 - 34 integration tests against real PostgreSQL
-- 11 Playwright journeys, including axe scans, role denials, tenant escape, keyboard entry, mobile overflow, a full draft to lot journey and the health endpoint
+- 12 Playwright journeys, including axe scans, role denials, tenant escape, keyboard entry, dark mode persistence, mobile overflow, a full draft to lot journey and the health endpoint
 - Production build passes
 - Lighthouse: see `docs/lighthouse.md`
 

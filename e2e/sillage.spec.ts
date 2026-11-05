@@ -50,6 +50,22 @@ test("the landing page explains the house and enters the demo", async ({ page })
   await noSeriousAxe(page);
 });
 
+test("dark mode persists and stays free of serious violations", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused();
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await noSeriousAxe(page);
+
+  await loginAs(page, "maya@sillage.demo");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await noSeriousAxe(page);
+  await expect(page.getByRole("button", { name: "Switch to light mode" })).toHaveAttribute("aria-pressed", "true");
+});
+
 test("the login page names the four roles and accepts a password", async ({ page }) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
