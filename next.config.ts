@@ -16,6 +16,7 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   devIndicators: false,
   allowedDevOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  typescript: { ignoreBuildErrors: false },
   async headers() {
     return [
       {
@@ -28,7 +29,10 @@ const nextConfig: NextConfig = {
           { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
           { key: "X-DNS-Prefetch-Control", value: "off" },
           ...(process.env.NODE_ENV === "production"
-            ? [{ key: "Content-Security-Policy", value: contentSecurityPolicy }]
+            ? [
+                { key: "Content-Security-Policy", value: contentSecurityPolicy },
+                { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+              ]
             : []),
           {
             key: "Permissions-Policy",
