@@ -121,7 +121,7 @@ As of 5 November 2026:
 
 - 70 unit tests
 - 34 integration tests against real PostgreSQL
-- 12 Playwright journeys, including axe scans, role denials, tenant escape, keyboard entry, dark mode persistence, mobile overflow, a full draft to lot journey and the health endpoint
+- 12 Playwright journeys, including axe scans, role denials, tenant escape, keyboard entry, dark mode persistence, phone/tablet/desktop overflow, a full draft to lot journey and the health endpoint
 - Production build passes
 - Lighthouse: see `docs/lighthouse.md`
 

@@ -219,28 +219,34 @@ test("a material can be added with the keyboard", async ({ page }) => {
   await expect(page.getByLabel("Hedione parts per thousand")).toBeVisible();
 });
 
-test("the house fits a phone without a page scrollbar", async ({ page }) => {
+test("the house fits phone, tablet and desktop without a page scrollbar", async ({ page }) => {
   await loginAs(page, "owner@sillage.demo");
-  for (const path of ["/desk", "/materials", "/archive"]) {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(path);
-    await expect(page.locator("h1")).toBeVisible();
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    for (const path of ["/desk", "/materials", "/archive", "/trials", "/batches"]) {
+      await page.goto(path);
+      await expect(page.locator("h1")).toBeVisible();
+      const width = await page.evaluate(() => ({
+        scroll: document.documentElement.scrollWidth,
+        inner: window.innerWidth,
+      }));
+      expect(width.scroll, `${path} at ${viewport.width}px`).toBeLessThanOrEqual(width.inner);
+    }
+
+    await page.goto("/desk");
+    const formula = page.locator(".formula-tab").first();
+    await formula.click();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const width = await page.evaluate(() => ({
       scroll: document.documentElement.scrollWidth,
       inner: window.innerWidth,
     }));
-    expect(width.scroll, path).toBeLessThanOrEqual(width.inner);
+    expect(width.scroll, `formula at ${viewport.width}px`).toBeLessThanOrEqual(width.inner);
   }
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/desk");
-  await page.locator(".formula-tab").first().click();
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  const width = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    inner: window.innerWidth,
-  }));
-  expect(width.scroll).toBeLessThanOrEqual(width.inner);
 });
 
 test("the health endpoint reports the database and commit", async ({ request }) => {
