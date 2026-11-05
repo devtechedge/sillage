@@ -117,7 +117,7 @@ npm run db:status
 
 ## Verification
 
-As of 3 November 2026:
+As of 5 November 2026:
 
 - 70 unit tests
 - 34 integration tests against real PostgreSQL
